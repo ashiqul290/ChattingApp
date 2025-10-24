@@ -4,9 +4,9 @@ import { RouterProvider } from "react-router/dom";
 import Rootlayout from './layout/Rootlayout';
 import Home from './Pages/Home';
 import About from './Pages/About';
-import AuthLayout from './layout/AuthLayout';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
+import AllUserList from './Components/AllUserList';
 
 
 function App() {
@@ -17,7 +17,7 @@ let router = createBrowserRouter([
     Component: Rootlayout,
     children: [
       { index: true, Component: Home },
-      { path: "about", Component: About },
+      { path: "/about", Component: About },
       
      
     ],
@@ -29,6 +29,10 @@ let router = createBrowserRouter([
   {
     path: "/register",
     Component: Register,
+  },
+  {
+    path: "/AllUserList",
+    Component: AllUserList,
   },
 ]);
 

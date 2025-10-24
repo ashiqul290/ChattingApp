@@ -1,1 +1,55 @@
 @import "tailwindcss";
+
+
+.span1{
+    
+animation: span1 0.7s infinite alternate ;
+}
+.span2{
+    
+animation: span1 0.8s infinite alternate ;
+}
+.span3{
+    
+animation: span1 0.9s infinite alternate ;
+}
+.span4{
+    
+animation: span1 1.1s infinite alternate ;
+}
+.span5{
+    
+animation: span1 1.2s infinite alternate ;
+}
+.span6{
+    
+animation: span1 1.3s infinite alternate ;
+}
+.span7{
+    
+animation: span1 1.4s infinite alternate;
+}
+.span8{
+    
+animation: span1 1.5s infinite alternate;
+}
+.span9{
+    
+animation: span1 1.6s infinite alternate;
+}
+.span10{
+    
+animation: span1 1.3s infinite alternate;
+}
+.span11{
+    
+animation: span1 1.4s infinite alternate;
+}
+@keyframes span1 {
+    0%{
+        transform: translateY(0);
+    }
+    100%{
+        transform: translateY(-20px);
+    }
+}

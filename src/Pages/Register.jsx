@@ -2,9 +2,13 @@ import React, { useState } from 'react'
 import logoImg from '../assets/img/da_costa_and_asociadors_ca_logo.svg'
 import { FaRegEye } from "react-icons/fa6";
 import { FaRegEyeSlash } from "react-icons/fa6";
-import { Link } from 'react-router';
-import { getAuth, createUserWithEmailAndPassword ,sendEmailVerification } from "firebase/auth";
+import { Link, useNavigate } from 'react-router';
+import { getAuth, createUserWithEmailAndPassword ,sendEmailVerification, updateProfile } from "firebase/auth";
 import toast, { Toaster } from 'react-hot-toast';
+import Loding from '../Components/Loding';
+import { useDispatch } from 'react-redux';
+import { userInfo } from '../slice/userSlice';
+
 
 const Register = () => {
   let [show , setShow] = useState(false)
@@ -19,6 +23,9 @@ const Register = () => {
   pwd:''
  })
  let [loding, setLoding] = useState(false)
+ let netive = useNavigate()
+ let [bgBlur, setBgBlur] = useState(false)
+ let dispatch = useDispatch()
   
   let haendlName = (e)=>{
     setError('')
@@ -43,6 +50,7 @@ let heandleHide= ()=>{
 setShow(!show)
 }
 let heandleSignUp =()=>{
+
 setLoding(true)
   if(!info.name){
     setError((prev)=>({
@@ -85,30 +93,45 @@ createUserWithEmailAndPassword(auth, info.email, info.pwd)
     // Signed up 
     const user = userCredential.user;
     sendEmailVerification(auth.currentUser)
-  .then(() => {
-    setLoding(false)
-    toast.success('Email send Successfully!')
-  })
+    updateProfile(auth.currentUser, {
+  displayName: info.name , photoURL: "https://example.com/jane-q-user/profile.jpg"
+}).then(() => {
+   setLoding(false)
+    netive('/login')
+ 
+// dispatch(userInfo(info.name))
+
+    // setBgBlur(true)
+
+
+}).catch((error) => {
+
+});
+ 
 })
 .catch((error) => {
     setLoding(false)
     const errorCode = error.code;
     const errorMessage = error.message;
 
-    // toast.error("This didn't work.")
+    // toast.error("Alredy account create")
 
   });
+
 
 }
   return (
     <>
+      {
+      loding ? <Loding  /> : ''
+    }
 <div className="flex items-center w-full h-[100vh]">
 <Toaster
   position="top-center"
   reverseOrder={false}
 />
 
-      <form className="bg-white shadow-[0_0_5px] rounded-xl   mx-auto  px-8 py-12   w-150">
+      <form className="bg-white shadow-[0_0_25px] shadow-gray-900/25 rounded-xl   mx-auto  px-8 py-12   w-150">
         <h2 className=" flex items-center gap-2 text-slate-900 text-3xl font-bold mb-3"><img className='max-w-15' src={logoImg} alt="" />CattingApp Registion</h2>
         <h3 className=' mb-8 text-gray-600 font-medium '>Welcome to cattingApps! Plece Give me your informetion</h3>
         <div className="space-y-4">
@@ -151,14 +174,7 @@ createUserWithEmailAndPassword(auth, info.email, info.pwd)
             : <FaRegEyeSlash onClick={heandleHide}  className='  text-[20px] absolute right-3 top-4'/>
           }
           </div>
-          <div className="text-sm text-right">
-            <a
-              href="jajvascript:void(0);"
-              className="text-blue-600 font-medium hover:underline"
-            >
-              Forgot your password?
-            </a>
-          </div>
+          
         </div>
         <div className="mt-12">
           <button
@@ -172,7 +188,7 @@ createUserWithEmailAndPassword(auth, info.email, info.pwd)
           </button>
         </div>
         <p className="my-6 text-sm text-slate-600 text-center">
-        Don't have any account? <Link to={`/login`} className='text-[18px] font-bold text-purple-600 underline cursor-pointer'>Sign In</Link>   
+     Already have an account?<Link to={`/login`} className='text-[18px] font-bold text-purple-600 underline cursor-pointer'> Login here</Link>   
         </p>
         
       </form>
