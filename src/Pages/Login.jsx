@@ -15,7 +15,7 @@ import { Provider, useDispatch } from "react-redux";
 import { userInfo } from "../slice/userSlice";
 import facbook from "../assets/img/feacbook.webp";
 import google from "../assets/img/google.png";
-
+import { getDatabase, ref, set } from "firebase/database";
 
 function Login() {
   let dispatch = useDispatch();
@@ -109,6 +109,12 @@ function Login() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
+        console.log(user)
+        const db = getDatabase();
+  set(ref(db, 'users/' + user.uid), {
+    name: user.displayName,
+    email: user.email,
+  });
         toast.success("Login Successfully");
           netive("/");
           dispatch(userInfo(user));

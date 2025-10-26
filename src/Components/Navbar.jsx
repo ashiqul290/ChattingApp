@@ -6,21 +6,27 @@ import { useNavigate } from "react-router";
 import ProfileImg from "../assets/img/mypic.jpg";
 import { useSelector } from "react-redux";
 import Loding from "./Loding";
+import { getAuth, signOut } from "firebase/auth";
+import { useDispatch } from "react-redux";
+
 
 const Navbar = () => {
-    let data = useSelector((state)=> state.user.value)
-let [loding, setLoding] = useState(false)
+  let dispatch = useDispatch()
+  let data = useSelector((state) => state.user.value);
+  let [loding, setLoding] = useState(false);
   const navigate = useNavigate();
 
   // 🔹 Popup (Modal) state
   const [isOpen, setIsOpen] = useState(false);
+  const [isSettingOpen, setSettingIsOpen] = useState(false);
   const [name, setName] = useState("John Doe");
   const [details, setDetails] = useState("Frontend Developer");
   const [image, setImage] = useState(ProfileImg);
-
   const [tempName, setTempName] = useState(name);
   const [tempDetails, setTempDetails] = useState(details);
   const [tempImage, setTempImage] = useState(image);
+
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -34,28 +40,42 @@ let [loding, setLoding] = useState(false)
     setDetails(tempDetails);
     setImage(tempImage);
     setIsOpen(false);
+    setSettingIsOpen(false);
   };
 
-  const handleMessage = () =>{
-    setLoding(true)
-    setTimeout(()=>{
-       navigate("/")
-      setLoding(false)
-     },1500)
+  const handleMessage = () => {
+    setLoding(true);
+    setTimeout(() => {
+      navigate("/");
+      setLoding(false);
+    }, 1500);
   };
   const handleFriends = () => {
-    setLoding(true)
-    setTimeout(()=>{
-      navigate("/AllUserList")  
-      setLoding(false)
-     },1500)
+    setLoding(true);
+    setTimeout(() => {
+      navigate("/AllUserList");
+      setLoding(false);
+    }, 1500);
   };
+  //   const handleSignOut = () => {
+  //  alert('alfj')
+  //   setIsOpen(false);
+  // };
+
+  let heandeleLogout= ()=>{
+   const auth = getAuth();
+signOut(auth).then(() => {
+  navigate('/login')
+  localStorage.removeItem('user')
+  dispatch(adduser(null))
+}).catch((error) => {
+  
+});
+  }
 
   return (
     <>
-     {
-      loding ? <Loding  /> : ''
-    }
+      {loding ? <Loding /> : ""}
       <div className="pt-5 bg-gray-100 px-3 h-[100vh] w-20 flex flex-col items-center">
         {/* Messages */}
         <div onClick={handleMessage} className="relative cursor-pointer">
@@ -70,12 +90,40 @@ let [loding, setLoding] = useState(false)
         </div>
 
         {/* Settings */}
-        <div className="relative mt-90">
+        <div onClick={() => setSettingIsOpen(true)} className="relative mt-90">
           <button className="cursor-pointer">
             <IoSettingsOutline className="bg-gray-200 px-2 rounded-full text-5xl text-gray-700 hover:bg-gray-300 duration-300" />
           </button>
         </div>
+        {/* 🔹 Popup Modal Setting*/}
+      {isSettingOpen && (
+        <div className="fixed inset-0 bg-black/35 backdrop-blur bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl w-80 p-6 shadow-lg relative animate-fade-in">
+            <button
+              onClick={() => setSettingIsOpen(false)}
+              className="absolute top-0 right-3 text-gray-400 hover:text-black text-[40px]"
+            >
+              &times;
+            </button>
 
+            <h2 className="text-xl font-semibold mb-4 text-center">
+              Change Your Accounts
+            </h2>
+
+         
+
+          <div className="flex gap-3 justify-around">
+              
+            <button
+              onClick={heandeleLogout}
+              className=" cursor-pointer mt-5 w-50 bg-red-900 hover:bg-red-800 text-white/80 py-2 rounded-lg font-bold transition"
+            >
+              Log out
+            </button>
+          </div>
+          </div>
+        </div>
+      )}
         {/* Profile */}
         <div
           onClick={() => setIsOpen(true)}
@@ -128,9 +176,12 @@ let [loding, setLoding] = useState(false)
 
             {/* Input Fields */}
             <div className="mt-4 space-y-3">
-              
-              <h2 className="text-2xl font-bold text-gray-800">{data.displayName}</h2>
-              <h2 className="text-[18px] font-bold text-gray-600">{data.email}</h2>
+              <h2 className="text-2xl font-bold text-gray-800">
+                {data.displayName}
+              </h2>
+              <h2 className="text-[18px] font-bold text-gray-600">
+                {data.email}
+              </h2>
             </div>
 
             <button
@@ -142,6 +193,7 @@ let [loding, setLoding] = useState(false)
           </div>
         </div>
       )}
+      
     </>
   );
 };
