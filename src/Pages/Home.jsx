@@ -9,11 +9,17 @@ import { MdReport } from "react-icons/md";
 import { MdOutlineSentimentSatisfied } from "react-icons/md";
 import { LuLink } from "react-icons/lu";
 import { MdOutlineKeyboardVoice } from "react-icons/md";
-
+import { IoSend } from "react-icons/io5";
+ import { useDispatch } from "react-redux";
+import { selecteduser } from "../slice/messageSlice";
+import MessagePage from "../Components/MessagePage";
 const Home = () => {
+   let data = useSelector((state)=> state.messageSlice.value)
+  let despatch = useDispatch()
   const details = useSelector((state) => state.user.value);
-
+  let [showmessge, setShowMessge] = useState(false);
   let [friendid, setFriendId] = useState([]);
+
   const db = getDatabase();
   useEffect(() => {
     const userRef = ref(db, "FriendList/");
@@ -31,7 +37,21 @@ const Home = () => {
     });
   }, [db]);
 
-  console.log(friendid);
+  let heandelshowMessgaeBar = (item) => {
+ 
+    setShowMessge(true);
+    if(details.uid == item.senderid){
+      despatch(selecteduser({name:item.recivername,email:item.reciveremail,id:item.reciverid}))
+
+    }else{
+ despatch(selecteduser({name:item.sendername,email:item.senderemail,id:item.senderid}))
+    }
+
+
+  };
+
+
+
   return (
     <>
       <div className="flex ">
@@ -55,7 +75,10 @@ const Home = () => {
           </div>
           <div className="w-full h-[80%] overflow-y-scroll ">
             {friendid.map((item) => (
-              <button className="mt-2 py-1 px-1 duration-500 hover:bg-gray-200 bg-gray-50  flex items-center gap-2 border border-gray-100 rounded-[5px] w-full">
+              <button
+                onClick={()=>heandelshowMessgaeBar(item)}
+                className={`mt-2 py-1 px-1 duration-500 hover:bg-gray-200 flex items-center gap-2 border border-gray-100 rounded-[5px] w-full ${item.senderid == data.id || item.reciverid == data.id ?'bg-gray-300' : '  bg-gray-50 '}`}
+              >
                 <img
                   className="w-13 h-13 rounded-full bg-gray-400"
                   src="https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:fe1e10e7-d931-49b4-816a-cc8517da2177/"
@@ -75,15 +98,27 @@ const Home = () => {
           </div>
         </div>
         <div className="bg-gray-200 w-full h-[100vh]">
-          {/* <div className=" w-full h-[100%] flex items-center justify-center text-center">
-            <div className="">
-              <h2 className="text-2xl font-bold text-gray-600"> ChattingApp for Windows</h2>
-              <h2 className="text-[16px]  text-gray-500 mt-1">Send and receive messages without keeping your phone online. </h2>
-              <h2 className="text-[16px] text-gray-500 ">Use ChttingApp on up to 4 linked devices and 1 phone at the same time.</h2>
+          {showmessge ? (
+           <MessagePage />
+          ) : (
+            <div className=" w-full h-[100%] flex items-center justify-center text-center">
+              <div className="">
+                <h2 className="text-2xl font-bold text-gray-600">
+                  {" "}
+                  ChattingApp for Windows
+                </h2>
+                <h2 className="text-[16px]  text-gray-500 mt-1">
+                  Send and receive messages without keeping your phone online.{" "}
+                </h2>
+                <h2 className="text-[16px] text-gray-500 ">
+                  Use ChttingApp on up to 4 linked devices and 1 phone at the
+                  same time.
+                </h2>
+              </div>
             </div>
-          </div> */}
+          )}
 
-          <div className=" relative h-[100%]">
+          {/* <div className=" relative h-[100%]">
             <div className="w-full px-3 py-2 border border-gray-300 flex gap-2 items-center justify-between bg-white">
               <div className="flex gap-2">
                 <img
@@ -134,7 +169,7 @@ const Home = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
