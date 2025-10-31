@@ -36,13 +36,12 @@ const AllUserList = () => {
   //   });
   // }, [db]);
 
-// let requestSee = friendRequestId.includes(
-//   userList.map((item)=>{item.id + details.uid
-//  }) ||   userList.map((item)=>{ details.uid + item.id 
-//  })
-// )
+  // let requestSee = friendRequestId.includes(
+  //   userList.map((item)=>{item.id + details.uid
+  //  }) ||   userList.map((item)=>{ details.uid + item.id
+  //  })
+  // )
 
- 
   return (
     <>
       <div className="flex">
@@ -68,7 +67,7 @@ const AllUserList = () => {
               <div className="w-full h-125 p-2 overflow-y-scroll">
                 {/* User list */}
                 {userList.map((item) => (
-                  <UserItem key={item.id} info={item} uid={item.id}/>
+                  <UserItem key={item.id} info={item} uid={item.id} />
                 ))}
               </div>
             </div>

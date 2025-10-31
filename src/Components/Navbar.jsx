@@ -8,10 +8,10 @@ import { useSelector } from "react-redux";
 import Loding from "./Loding";
 import { getAuth, signOut } from "firebase/auth";
 import { useDispatch } from "react-redux";
-
+import { MdReportProblem } from "react-icons/md";
 
 const Navbar = () => {
-  let dispatch = useDispatch()
+  let dispatch = useDispatch();
   let data = useSelector((state) => state.user.value);
   let [loding, setLoding] = useState(false);
   const navigate = useNavigate();
@@ -25,8 +25,6 @@ const Navbar = () => {
   const [tempName, setTempName] = useState(name);
   const [tempDetails, setTempDetails] = useState(details);
   const [tempImage, setTempImage] = useState(image);
-
-
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -62,16 +60,16 @@ const Navbar = () => {
   //   setIsOpen(false);
   // };
 
-  let heandeleLogout= ()=>{
-   const auth = getAuth();
-signOut(auth).then(() => {
-  navigate('/login')
-  localStorage.removeItem('user')
-  dispatch(adduser(null))
-}).catch((error) => {
-  
-});
-  }
+  let heandeleLogout = () => {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        navigate("/login");
+        localStorage.removeItem("user");
+        dispatch(adduser(null));
+      })
+      .catch((error) => {});
+  };
 
   return (
     <>
@@ -96,34 +94,35 @@ signOut(auth).then(() => {
           </button>
         </div>
         {/* 🔹 Popup Modal Setting*/}
-      {isSettingOpen && (
-        <div className="fixed inset-0 bg-black/35 backdrop-blur bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-80 p-6 shadow-lg relative animate-fade-in">
-            <button
-              onClick={() => setSettingIsOpen(false)}
-              className="absolute top-0 right-3 text-gray-400 hover:text-black text-[40px]"
-            >
-              &times;
-            </button>
-
-            <h2 className="text-xl font-semibold mb-4 text-center">
-              Change Your Accounts
-            </h2>
-
-         
-
-          <div className="flex gap-3 justify-around">
-              
-            <button
-              onClick={heandeleLogout}
-              className=" cursor-pointer mt-5 w-50 bg-red-900 hover:bg-red-800 text-white/80 py-2 rounded-lg font-bold transition"
-            >
-              Log out
-            </button>
+        {isSettingOpen && (
+          <div className="fixed inset-0 bg-black/35 backdrop-blur bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl w-80 p-6 shadow-lg relative animate-fade-in">
+              <button
+                onClick={() => setSettingIsOpen(false)}
+                className="absolute top-0 right-3 text-gray-400 hover:text-black text-[40px]"
+              >
+                &times;
+              </button>
+              <div className=" flex justify-center">
+                <MdReportProblem className="text-9xl text-red-900" />
+              </div>
+              <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
+                Are you sure?
+              </h2>
+              <h3 className="text-[18px] font-medium text-gray-600 mb-4 text-center">
+                You want to log out?
+              </h3>
+              <div className="flex gap-3 justify-around">
+                <button
+                  onClick={heandeleLogout}
+                  className=" cursor-pointer mt-5 w-50 bg-red-900 hover:bg-red-800 text-white/80 py-2 rounded-lg font-bold transition"
+                >
+                  Log out
+                </button>
+              </div>
+            </div>
           </div>
-          </div>
-        </div>
-      )}
+        )}
         {/* Profile */}
         <div
           onClick={() => setIsOpen(true)}
@@ -193,7 +192,6 @@ signOut(auth).then(() => {
           </div>
         </div>
       )}
-      
     </>
   );
 };

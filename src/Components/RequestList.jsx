@@ -1,7 +1,7 @@
-import { getDatabase, onValue, ref } from 'firebase/database';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import Confirm from './Confirm';
+import { getDatabase, onValue, ref } from "firebase/database";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import Confirm from "./Confirm";
 
 const RequestList = () => {
   const [confirmList, setConfirmList] = useState([]);
@@ -9,7 +9,7 @@ const RequestList = () => {
   const details = useSelector((state) => state.user.value);
 
   useEffect(() => {
-    const userRef = ref(db, 'FriendRequest/');
+    const userRef = ref(db, "FriendRequest/");
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
       const array = [];

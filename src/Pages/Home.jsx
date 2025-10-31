@@ -10,12 +10,12 @@ import { MdOutlineSentimentSatisfied } from "react-icons/md";
 import { LuLink } from "react-icons/lu";
 import { MdOutlineKeyboardVoice } from "react-icons/md";
 import { IoSend } from "react-icons/io5";
- import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { selecteduser } from "../slice/messageSlice";
 import MessagePage from "../Components/MessagePage";
 const Home = () => {
-   let data = useSelector((state)=> state.messageSlice.value)
-  let despatch = useDispatch()
+  let data = useSelector((state) => state.messageSlice.value);
+  let despatch = useDispatch();
   const details = useSelector((state) => state.user.value);
   let [showmessge, setShowMessge] = useState(false);
   let [friendid, setFriendId] = useState([]);
@@ -38,19 +38,25 @@ const Home = () => {
   }, [db]);
 
   let heandelshowMessgaeBar = (item) => {
- 
     setShowMessge(true);
-    if(details.uid == item.senderid){
-      despatch(selecteduser({name:item.recivername,email:item.reciveremail,id:item.reciverid}))
-
-    }else{
- despatch(selecteduser({name:item.sendername,email:item.senderemail,id:item.senderid}))
+    if (details.uid == item.senderid) {
+      despatch(
+        selecteduser({
+          name: item.recivername,
+          email: item.reciveremail,
+          id: item.reciverid,
+        })
+      );
+    } else {
+      despatch(
+        selecteduser({
+          name: item.sendername,
+          email: item.senderemail,
+          id: item.senderid,
+        })
+      );
     }
-
-
   };
-
-
 
   return (
     <>
@@ -76,8 +82,12 @@ const Home = () => {
           <div className="w-full h-[80%] overflow-y-scroll ">
             {friendid.map((item) => (
               <button
-                onClick={()=>heandelshowMessgaeBar(item)}
-                className={`mt-2 py-1 px-1 duration-500 hover:bg-gray-200 flex items-center gap-2 border border-gray-100 rounded-[5px] w-full ${item.senderid == data.id || item.reciverid == data.id ?'bg-gray-300' : '  bg-gray-50 '}`}
+                onClick={() => heandelshowMessgaeBar(item)}
+                className={`mt-2 py-1 px-1 duration-500 hover:bg-gray-200 flex items-center gap-2 border border-gray-100 rounded-[5px] w-full ${
+                  item.senderid == data.id || item.reciverid == data.id
+                    ? "bg-gray-300"
+                    : "  bg-gray-50 "
+                }`}
               >
                 <img
                   className="w-13 h-13 rounded-full bg-gray-400"
@@ -99,7 +109,7 @@ const Home = () => {
         </div>
         <div className="bg-gray-200 w-full h-[100vh]">
           {showmessge ? (
-           <MessagePage />
+            <MessagePage />
           ) : (
             <div className=" w-full h-[100%] flex items-center justify-center text-center">
               <div className="">

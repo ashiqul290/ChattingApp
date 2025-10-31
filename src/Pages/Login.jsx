@@ -109,16 +109,16 @@ function Login() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        console.log(user)
+        console.log(user);
         const db = getDatabase();
-  set(ref(db, 'users/' + user.uid), {
-    name: user.displayName,
-    email: user.email,
-  });
+        set(ref(db, "users/" + user.uid), {
+          name: user.displayName,
+          email: user.email,
+        });
         toast.success("Login Successfully");
-          netive("/");
-          dispatch(userInfo(user));
-          localStorage.setItem("user", JSON.stringify(user));
+        netive("/");
+        dispatch(userInfo(user));
+        localStorage.setItem("user", JSON.stringify(user));
       })
       .catch((error) => {
         const errorCode = error.code;
