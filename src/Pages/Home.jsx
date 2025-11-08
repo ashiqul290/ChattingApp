@@ -3,13 +3,6 @@ import Navbar from "../Components/Navbar";
 import { FaSearch } from "react-icons/fa";
 import { getDatabase, onValue, ref } from "firebase/database";
 import { useSelector } from "react-redux";
-import { BiPhoneCall } from "react-icons/bi";
-import { FaVideo } from "react-icons/fa6";
-import { MdReport } from "react-icons/md";
-import { MdOutlineSentimentSatisfied } from "react-icons/md";
-import { LuLink } from "react-icons/lu";
-import { MdOutlineKeyboardVoice } from "react-icons/md";
-import { IoSend } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { selecteduser } from "../slice/messageSlice";
 import MessagePage from "../Components/MessagePage";
@@ -57,6 +50,7 @@ const Home = () => {
       );
     }
   };
+
 
   return (
     <>
