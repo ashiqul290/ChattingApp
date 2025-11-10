@@ -1,4 +1,5 @@
 import {
+  get,
   getDatabase,
   onValue,
   push,
@@ -44,6 +45,7 @@ const MessagePage = () => {
   let [showBlockPro, setShowBlockPro] = useState(false);
   let [blockShowbar, setBlockShowBar] = useState(false);
   let [unfrendShowbar, setUnFriendShowBar] = useState(false);
+  let [unBlockuser, setunBlockuser] = useState(false);
   let [blockInput, setBlockInput] = useState(false);
   let heandleChange = (e) => {
     setInputValue(e.target.value);
@@ -105,26 +107,72 @@ const MessagePage = () => {
   let haendleCencelBlock = () => {
     setBlockShowBar(false);
   };
-  let heandleBlockConfrim = () => {
-    setBlockInput(true);
-    const blockRef = ref(db, "blockedUsers/");
+  let heandleBlockConfrim = async () => {
+    try {
+      setBlockInput(true);
+      const blockRef = ref(db, "blockedUsers/");
 
-    set(push(blockRef), {
-      blockerId: user.uid,
-      blockerName: user.displayName,
-      blockerEmail: user.email,
-      blockedId: data.id,
-      blockedName: data.name,
-      blockedEmail: data.email,
-    })
-      .then(() => {
-        remove(ref(db, "FriendList/" + data.id));
-        setBlockShowBar(false);
-      })
-      .catch((err) => {
-        console.error("Error blocking user:", err);
+      const snapshot = await get(blockRef);
+      snapshot.forEach((item) => {
+        const val = item.val();
+        if (
+          (val.blockerId === user.uid && val.blockedId === data.id) ||
+          (val.blockerId === data.id && val.blockedId === user.uid)
+        ) {
+          remove(ref(db, "blockedUsers/" + item.key));
+        }
       });
+
+      const blockData1 = {
+        blockerId: user.uid,
+        blockerName: user.displayName,
+        blockerEmail: user.email,
+        blockedId: data.id,
+        blockedName: data.name,
+        blockedEmail: data.email,
+      };
+
+      const blockData2 = {
+        blockerId: data.id,
+        blockerName: data.name,
+        blockerEmail: data.email,
+        blockedId: user.uid,
+        blockedName: user.displayName,
+        blockedEmail: user.email,
+      };
+
+      await Promise.all([
+        set(push(blockRef), blockData1),
+        set(push(blockRef), blockData2),
+      ]);
+      await Promise.all([
+        remove(ref(db, "FriendList/" + data.id)),
+        remove(ref(db, "FriendList/" + user.uid)),
+      ]);
+      setBlockShowBar(false);
+    } catch (err) {
+      console.error("Error blocking user:", err);
+    }
   };
+
+  useEffect(() => {
+    const blockRef = ref(db, "blockedUsers/");
+    const unsubscribe = onValue(blockRef, (snapshot) => {
+      let isBlocked = false;
+      snapshot.forEach((item) => {
+        const val = item.val();
+        if (
+          (val.blockerId === user.uid && val.blockedId === data.id) ||
+          (val.blockerId === data.id && val.blockedId === user.uid)
+        ) {
+          isBlocked = true;
+        }
+      });
+      setBlockInput(isBlocked);
+    });
+
+    return () => unsubscribe();
+  }, [data.id, user.uid]);
 
   let heandleUnfriend = () => {
     setUnFriendShowBar(true);
@@ -137,6 +185,38 @@ const MessagePage = () => {
     alert("good");
   };
 
+  let heandleUnBlockUseer = () => {
+    setunBlockuser(true);
+  };
+
+  let haendleCencelUnBlock = () => {
+    setunBlockuser(false);
+  };
+  let heandleUnBlockConfrim = () => {
+    const blockRef = ref(db, "blockedUsers/");
+    onValue(blockRef, (snapshot) => {
+      snapshot.forEach((item) => {
+        const val = item.val();
+        if (
+          (val.blockerId === user.uid && val.blockedId === data.id) ||
+          (val.blockerId === data.id && val.blockedId === user.uid)
+        ) {
+          remove(ref(db, "blockedUsers/" + item.key));
+        }
+      });
+    });
+
+    setunBlockuser(false);
+    setBlockInput(false);
+  };
+
+// Call Setup
+  let handleaudoCall = ()=>{
+    alert('No setup audo Call')
+  }
+  let handleVideoCall = ()=>{
+    alert('No setup Video Call')
+  }
   return (
     <>
       <div className=" relative h-[100%]">
@@ -157,10 +237,10 @@ const MessagePage = () => {
             </div>
           </div>
           <div className="flex gap-2">
-            <button className="border cursor-pointer p-3 rounded-full border-gray-400">
+            <button onClick={handleaudoCall} className="border cursor-pointer p-3 rounded-full border-gray-400">
               <BiPhoneCall className="text-2xl text-gray-900" />
             </button>
-            <button className="border cursor-pointer p-3 rounded-full border-gray-400">
+            <button onClick={handleVideoCall} className="border cursor-pointer p-3 rounded-full border-gray-400">
               <FaVideo className="text-2xl text-gray-900" />
             </button>
             <button
@@ -182,11 +262,17 @@ const MessagePage = () => {
                 <h2 className="text-[30px] text-center mt-2 font-bold text-gray-800">
                   {data.name}
                 </h2>
+                <h2 className="text-[20px] text-center mt-2 font-bold text-gray-600">
+                  {data.email}
+                </h2>
 
                 <div className="flex gap-2 justify-center mt-10">
                   {blockInput ? (
-                    <button className=" cursor-pointer flex items-center gap-2 shadow-[0_0_3px] text-2xl font-medium text-gray-600  py-1 px-5 rounded-[10px] ">
-                      <RiUserForbidFill className="text-red-600"/> Unblock
+                    <button
+                      onClick={heandleUnBlockUseer}
+                      className=" cursor-pointer flex items-center gap-2 shadow-[0_0_3px] text-2xl font-medium text-gray-600  py-1 px-5 rounded-[10px] "
+                    >
+                      <RiUserForbidFill className="text-red-600" /> Unblock
                     </button>
                   ) : (
                     <button
@@ -195,6 +281,39 @@ const MessagePage = () => {
                     >
                       <RiUserForbidFill /> Block
                     </button>
+                  )}
+
+                  {unBlockuser ? (
+                    <div className="fixed inset-0 bg-black/35 backdrop-blur bg-opacity-50 flex items-center justify-center z-50">
+                      <div className="bg-white rounded-xl w-80 p-6 shadow-lg relative animate-fade-in">
+                        <button className="absolute top-0 right-3 text-gray-400 hover:text-black text-[40px]"></button>
+                        <div className=" flex justify-center">
+                          <RiUserForbidFill className="text-9xl text-red-900" />
+                        </div>
+                        <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
+                          Are you sure?
+                        </h2>
+                        <h3 className="text-[18px] font-medium text-gray-600 mb-4 text-center">
+                          Will you Unblock the account?
+                        </h3>
+                        <div className="flex gap-3 justify-around">
+                          <button
+                            onClick={haendleCencelUnBlock}
+                            className=" cursor-pointer mt-5 w-50 bg-gray-200  text-gray-700 py-2 rounded-lg font-bold transition"
+                          >
+                            Cencel
+                          </button>
+                          <button
+                            onClick={heandleUnBlockConfrim}
+                            className=" cursor-pointer mt-5 w-50 bg-red-900 hover:bg-red-800 text-white/80 py-2 rounded-lg font-bold transition"
+                          >
+                            Confirm
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
                   )}
 
                   {blockShowbar ? (
@@ -323,8 +442,9 @@ const MessagePage = () => {
         <div className="w-full bg-gray-100 absolute bottom-0 left-0 ">
           {blockInput ? (
             <div className="flex gap-2 items-center bg-gray-200 justify-center  px-2">
-                <h2  className="text-xl font-medium text-gray-500 bg-gray-200 py-5 ">You can’t message this account.</h2>
-
+              <h2 className="text-xl font-medium text-gray-500 bg-gray-200 py-5 ">
+                You can’t message this account.
+              </h2>
             </div>
           ) : (
             <div className="flex gap-2 items-center px-2">
